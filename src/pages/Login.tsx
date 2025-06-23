@@ -17,14 +17,22 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError("")
+    setIsLoading(true)
 
     try {
-      await login(email, password)
-      navigate("/")
+      console.log("🔐 Intentando login con:", email)
+      const success = await login(email, password)
+
+      if (success) {
+        console.log("✅ Login exitoso, redirigiendo...")
+        navigate("/") // Redirigir al home después del login
+      } else {
+        setError("Credenciales inválidas. Verifica tu email y contraseña.")
+      }
     } catch (err) {
-      setError("Error al iniciar sesión. Verifica tus credenciales.")
+      console.error("Error en login:", err)
+      setError("Error de conexión. Verifica tu conexión a internet e inténtalo de nuevo.")
     } finally {
       setIsLoading(false)
     }
@@ -34,7 +42,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="mx-auto h-12 w-12 bg-pink-500 rounded-lg flex items-center justify-center">
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-pink-500">
             <span className="text-white font-bold text-xl">D</span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Inicia sesión en tu cuenta</h2>
@@ -52,7 +60,7 @@ export default function Login() {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+                Correo electrónico
               </label>
               <input
                 id="email"
@@ -62,7 +70,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"
-                placeholder="tu@email.com"
+                placeholder="tu@correo.com"
               />
             </div>
 
@@ -87,9 +95,16 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Iniciando sesión...
+                </div>
+              ) : (
+                "Iniciar sesión"
+              )}
             </button>
           </div>
         </form>
